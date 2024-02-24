@@ -1,17 +1,12 @@
 package br.com.estoque.consumer.controller;
 
-import br.com.estoque.consumer.listener.ConsumerEstoque;
 import br.com.estoque.consumer.model.Itens;
 import br.com.estoque.consumer.repository.ItensRepository;
-import br.com.estoque.consumer.service.RegistroItensService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import br.com.estoque.consumer.service.ItensService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -24,7 +19,7 @@ public class ItensController {
     @Autowired
     private ItensRepository repo;
     private final Logger logger = LoggerFactory.getLogger(ItensController.class);
-    private final RegistroItensService registroItensService;
+    private final ItensService registroItensService;
 
     public void update(Long id, Itens itens) {
         if(!repo.existsById(id)){

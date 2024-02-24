@@ -1,6 +1,5 @@
 package br.com.estoque.producer.service;
 
-import br.com.estoque.producer.model.Itens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +8,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MensagemService {
+public class EstoqueService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MensagemService.class);
+    private static final Logger logger = LoggerFactory.getLogger(EstoqueService.class);
 
-    @Value("${topic.odonto-uclinic}")
+    @Value("${topic.estoque-uclinic}")
     private String topicOdontoClinic;
 
     @Autowired

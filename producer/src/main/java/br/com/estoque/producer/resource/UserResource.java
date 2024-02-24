@@ -1,9 +1,9 @@
 package br.com.estoque.producer.resource;
 
-import br.com.estoque.producer.model.Itens;
 import br.com.estoque.producer.model.Message;
-import br.com.estoque.producer.repository.ItensRepository;
-import br.com.estoque.producer.service.MensagemService;
+import br.com.estoque.producer.model.User;
+import br.com.estoque.producer.repository.UserRepository;
+import br.com.estoque.producer.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,17 +12,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
 
 @RestController
-@RequestMapping("/estoque")
-public class MensagemResource {
+@RequestMapping("/user")
+public class UserResource {
 
     @Autowired
-    private ItensRepository repo;
+    private UserRepository repo;
 
     @Autowired
-    MensagemService mensagemService;
+    UserService mensagemService;
 
     @CrossOrigin(origins = "http://localhost:3000") // Permita solicitações apenas a partir de http://localhost:3000
     @PostMapping("/inserir")
@@ -76,15 +75,18 @@ public class MensagemResource {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Itens> buscar(@PathVariable Long id) {
+    public ResponseEntity<User> buscar(@PathVariable Long id) {
         return repo.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+
+
+
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping
-    public List<Itens> buscarTodos() {
+    public List<User> buscarTodos() {
         return repo.findAll();
     }
 }

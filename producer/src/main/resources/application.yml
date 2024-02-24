@@ -17,8 +17,8 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 topic:
-  odonto-uclinic: topic_odonto_kafka
-
+  estoque-uclinic: topic_estoque_kafka
+  user-uclinic: topic_user_kafka
 server:
   port : 8080
   error:
