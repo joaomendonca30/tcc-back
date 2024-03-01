@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/usuario")
 public class UserResource {
 
     @Autowired
@@ -38,15 +38,16 @@ public class UserResource {
         return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagemJson);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> atualizar(@PathVariable Long id, @RequestBody String itens,
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/editar/{userId}")
+    public ResponseEntity<String> atualizar(@PathVariable Long userId, @RequestBody String itens,
                                             HttpServletRequest request) throws JsonProcessingException {
 
         String method = request.getMethod();
 
         Message mensagem = new Message();
 
-        mensagem.setId(id);
+        mensagem.setId(userId);
         mensagem.setMethod(method);
         mensagem.setMessage(itens);
 
@@ -59,14 +60,16 @@ public class UserResource {
         return objectMapper.writeValueAsString(mensagem);
 
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id,HttpServletRequest request) throws JsonProcessingException {
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @DeleteMapping("/deletar/{userId}")
+    public ResponseEntity<String> delete(@PathVariable Long userId,HttpServletRequest request) throws JsonProcessingException {
         String method = request.getMethod();
 
         Message mensagemDelete = new Message();
 
         mensagemDelete.setMethod(method);
-        mensagemDelete.setId(id);
+        mensagemDelete.setId(userId);
 
         String mensagemJson = convertMensagemToJson(mensagemDelete);
         mensagemService.sendMessage(mensagemJson);
@@ -74,14 +77,12 @@ public class UserResource {
         return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagemJson);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> buscar(@PathVariable Long id) {
-        return repo.findById(id)
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> buscar(@PathVariable Long userId) {
+        return repo.findById(userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-
-
-
     }
 
     @CrossOrigin(origins = "http://localhost:3000")

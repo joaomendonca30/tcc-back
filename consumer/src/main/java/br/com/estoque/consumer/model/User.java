@@ -17,7 +17,7 @@ public class User {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
     @NotNull
     private String name;
     @Email
@@ -25,25 +25,25 @@ public class User {
     @NotNull
     private String cpf;
     @NotNull
-    private String telephone;
+    private String phoneNumber;
     @NotNull
     private String profile;
     @NotNull
-    private int numConselho;
+    private int council;
     @NotNull
-    private String uf;
+    private String federativeUnit;
 
     public User() {
     }
 
-    public User(Long id, String name, String email, String cpf, String telephone, String profile, int numConselho, String uf) {
-        this.id = id;
+    public User(Long userId, String name, String email, String cpf, String phoneNumber, String profile, int council, String federativeUnit) {
+        this.userId = userId;
         this.name = name;
         this.email = email;
         this.cpf = cpf;
-        this.telephone = telephone;
+        this.phoneNumber = phoneNumber;
         this.profile = profile;
-        this.numConselho = numConselho;
-        this.uf = uf;
+        this.council = council;
+        this.federativeUnit = federativeUnit;
     }
 }

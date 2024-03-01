@@ -23,7 +23,7 @@ public class UserController {
         if(!repo.existsById(id)){
             logger.info("Não foi encontrado esse ID na Base de Dados.");
         }
-        user.setId(id);
+        user.setUserId(id);
         User userAtualizado = userService.salvar(user);
         logger.info("User atualizado com sucesso.");
     }
