@@ -1,10 +1,8 @@
 package br.com.estoque.consumer.listener;
 
-import br.com.estoque.consumer.controller.ItensController;
-import br.com.estoque.consumer.controller.UserController;
-import br.com.estoque.consumer.model.Itens;
+import br.com.estoque.consumer.controller.PacienteController;
 import br.com.estoque.consumer.model.Message;
-import br.com.estoque.consumer.model.User;
+import br.com.estoque.consumer.model.Paciente;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -19,12 +17,12 @@ import java.io.IOException;
 import java.text.ParseException;
 
 @Service
-public class ConsumerUser {
+public class ConsumerPaciente {
     @Autowired
-    private UserController controller;
-    private final Logger logger = LoggerFactory.getLogger(ConsumerUser.class);
+    private PacienteController controller;
+    private final Logger logger = LoggerFactory.getLogger(ConsumerPaciente.class);
 
-    @KafkaListener(topics = "${topic.user-uclinic}", groupId = "group_id")
+    @KafkaListener(topics = "${topic.paciente-uclinic}", groupId = "group_id")
     public void consume(String kafkaMessage) throws IOException, ParseException {
         Message mensagemRecebida = parseJsonToMensagem(kafkaMessage);
         Long id = mensagemRecebida.getId();
@@ -34,20 +32,20 @@ public class ConsumerUser {
         if(method.equals("POST")){
             JsonMapper jsonMapper = new JsonMapper();
             jsonMapper.registerModule(new JavaTimeModule());
-            User user = jsonMapper.readValue(message, User.class);
+            Paciente paciente = jsonMapper.readValue(message, Paciente.class);
 
-            logger.info("User consumido - Insert: {}", message);
+            logger.info("Paciente consumido: {}", message);
 
-            controller.insert(user);
+            controller.insert(paciente);
         }
         else if(method.equals("PUT")){
             ObjectMapper objectMapper = new ObjectMapper();
-            User user = objectMapper.readValue(message, User.class);
-            logger.info("User consumido - update: {}", message);
-            controller.update(id, user);
+            Paciente paciente = objectMapper.readValue(message, Paciente.class);
+            logger.info("Paciente consumido: {}", message);
+            controller.update(id, paciente);
         }
         else {
-            logger.info("User consumido - delete: {}", id);
+            logger.info("Paciente consumido: {}", id);
             controller.delete(id);
         }
 

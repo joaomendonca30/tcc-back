@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @AllArgsConstructor
 @RequestMapping("/itens")
@@ -22,10 +20,7 @@ public class ItensController {
     private final ItensService registroItensService;
 
     public void update(Long id, Itens itens) {
-        if(!repo.existsById(id)){
-            logger.info("Não foi encontrado esse ID na Base de Dados.");
-        }
-        itens.setId(id);
+        itens.setProductId(id);
         Itens itensAtualizado = registroItensService.salvar(itens);
         logger.info("Item atualizado com sucesso.");
     }
@@ -36,12 +31,7 @@ public class ItensController {
     }
 
     public void delete(Long id) {
-        if(!repo.existsById(id)){
-            logger.info("Não foi encontrado esse ID na Base de Dados.");
+        registroItensService.excluir(id);
+        logger.info("Item deletado com sucesso.");
         }
-        else{
-            registroItensService.excluir(id);
-            logger.info("Item deletado com sucesso.");
-        }
-    }
 }

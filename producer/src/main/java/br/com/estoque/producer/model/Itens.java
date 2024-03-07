@@ -17,7 +17,7 @@ public class Itens {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long productId;
 
     private String name;
 
@@ -35,7 +35,7 @@ public class Itens {
     }
 
     public Itens(Long id, String name, int quantity, String producer, String type, Date startDate, Date endDate) {
-        this.id = id;
+        this.productId = id;
         this.name = name;
         this.quantity = quantity;
         this.producer = producer;

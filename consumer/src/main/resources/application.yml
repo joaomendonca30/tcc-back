@@ -19,7 +19,8 @@ spring:
 topic:
   estoque-uclinic: topic_estoque_kafka
   user-uclinic: topic_user_kafka
-
+  agenda-uclinic: topic_agenda_kafka
+  paciente-uclinic: topic_paciente_kafka
 server:
   port : 8081
   error:

@@ -20,9 +20,6 @@ public class UserController {
     private final UserService userService;
 
     public void update(Long id, User user) {
-        if(!repo.existsById(id)){
-            logger.info("Não foi encontrado esse ID na Base de Dados.");
-        }
         user.setUserId(id);
         User userAtualizado = userService.salvar(user);
         logger.info("User atualizado com sucesso.");
@@ -34,12 +31,7 @@ public class UserController {
     }
 
     public void delete(Long id) {
-        if(!repo.existsById(id)){
-            logger.info("Não foi encontrado esse ID na Base de Dados.");
-        }
-        else{
-            userService.excluir(id);
-            logger.info("User deletado com sucesso.");
-        }
+        userService.excluir(id);
+        logger.info("User deletado com sucesso.");
     }
 }

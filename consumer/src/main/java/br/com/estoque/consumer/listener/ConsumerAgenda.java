@@ -1,10 +1,10 @@
 package br.com.estoque.consumer.listener;
 
-import br.com.estoque.consumer.controller.ItensController;
-import br.com.estoque.consumer.controller.UserController;
-import br.com.estoque.consumer.model.Itens;
+import br.com.estoque.consumer.controller.AgendaController;
+import br.com.estoque.consumer.model.Agenda;
 import br.com.estoque.consumer.model.Message;
 import br.com.estoque.consumer.model.User;
+import br.com.estoque.consumer.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -19,12 +19,15 @@ import java.io.IOException;
 import java.text.ParseException;
 
 @Service
-public class ConsumerUser {
+public class ConsumerAgenda {
     @Autowired
-    private UserController controller;
-    private final Logger logger = LoggerFactory.getLogger(ConsumerUser.class);
+    private AgendaController controller;
 
-    @KafkaListener(topics = "${topic.user-uclinic}", groupId = "group_id")
+    @Autowired
+    private UserRepository userRepository;
+    private final Logger logger = LoggerFactory.getLogger(ConsumerAgenda.class);
+
+    @KafkaListener(topics = "${topic.agenda-uclinic}", groupId = "group_id")
     public void consume(String kafkaMessage) throws IOException, ParseException {
         Message mensagemRecebida = parseJsonToMensagem(kafkaMessage);
         Long id = mensagemRecebida.getId();
@@ -34,23 +37,37 @@ public class ConsumerUser {
         if(method.equals("POST")){
             JsonMapper jsonMapper = new JsonMapper();
             jsonMapper.registerModule(new JavaTimeModule());
-            User user = jsonMapper.readValue(message, User.class);
+            Agenda agenda = jsonMapper.readValue(message, Agenda.class);
+            logger.info("Agenda consumida: {}", message);
 
-            logger.info("User consumido - Insert: {}", message);
+            String cpfDoUsuario = "12345678-01";
+            Long userId = obterCPFDoUsuario(cpfDoUsuario);
 
-            controller.insert(user);
+            User user2 = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + userId));
+            agenda.setUser(user2); // Define o usuário na agenda
+
+            controller.insert(agenda);
         }
         else if(method.equals("PUT")){
             ObjectMapper objectMapper = new ObjectMapper();
-            User user = objectMapper.readValue(message, User.class);
-            logger.info("User consumido - update: {}", message);
-            controller.update(id, user);
+            Agenda agenda = objectMapper.readValue(message, Agenda.class);
+            logger.info("Agenda consumida: {}", message);
+            controller.update(id, agenda);
         }
         else {
-            logger.info("User consumido - delete: {}", id);
+            logger.info("Agenda consumida: {}", id);
             controller.delete(id);
         }
 
+    }
+    public Long obterCPFDoUsuario(String cpf) {
+        User user = userRepository.findByCpf(cpf);
+        if (user != null) {
+            return user.getUserId();
+        } else {
+            throw new RuntimeException("Usuário não encontrado com o cpf: " + cpf);
+        }
     }
     private Message parseJsonToMensagem(String json) throws JsonProcessingException {
 

@@ -1,11 +1,10 @@
 package br.com.estoque.producer.resource;
 
-import br.com.estoque.producer.model.Itens;
 import br.com.estoque.producer.model.Message;
-
-import br.com.estoque.producer.repository.ItensRepository;
-import br.com.estoque.producer.service.EstoqueService;
-import br.com.estoque.producer.service.UserService;
+import br.com.estoque.producer.model.Paciente;
+import br.com.estoque.producer.model.User;
+import br.com.estoque.producer.repository.PacienteRepository;
+import br.com.estoque.producer.service.PacienteService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,15 +19,16 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/estoque")
-public class EstoqueResource {
+@RequestMapping("/paciente")
+public class PacienteResource {
 
     @Autowired
-    private ItensRepository estoqueRepository;
-    private final Logger logger = LoggerFactory.getLogger(EstoqueResource.class);
+    private PacienteRepository pacienteRepository;
+
+    private final Logger logger = LoggerFactory.getLogger(UserResource.class);
 
     @Autowired
-    EstoqueService mensagemService;
+    PacienteService mensagemService;
 
     @CrossOrigin(origins = "http://localhost:3000") // Permita solicitações apenas a partir de http://localhost:3000
     @PostMapping("/inserir")
@@ -44,20 +44,19 @@ public class EstoqueResource {
         mensagemService.sendMessage(mensagemJson);
         return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagem);
     }
+
     @CrossOrigin(origins = "http://localhost:3000")
-    @PutMapping("/editar/{productId}")
-    public ResponseEntity<String> atualizar(@PathVariable Long productId, @RequestBody String itens,
+    @PutMapping("/editar/{patientId}")
+    public ResponseEntity<String> atualizar(@PathVariable Long patientId, @RequestBody String itens,
                                             HttpServletRequest request) throws JsonProcessingException {
 
         String method = request.getMethod();
-
         Message mensagem = new Message();
-
-        if (!estoqueRepository.existsById(productId)) {
+        if (!pacienteRepository.existsById(patientId)) {
             logger.info("Não foi encontrado esse ID na Base de Dados.");
             return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
         } else {
-            mensagem.setId(productId);
+            mensagem.setId(patientId);
             mensagem.setMethod(method);
             mensagem.setMessage(itens);
 
@@ -71,30 +70,34 @@ public class EstoqueResource {
         return objectMapper.writeValueAsString(mensagem);
 
     }
+
     @CrossOrigin(origins = "http://localhost:3000")
-    @DeleteMapping("/deletar/{productId}")
-    public ResponseEntity<String> delete(@PathVariable Long productId,HttpServletRequest request) throws JsonProcessingException {
+    @DeleteMapping("/deletar/{patientId}")
+    public ResponseEntity<String> delete(@PathVariable Long patientId,HttpServletRequest request) throws JsonProcessingException {
         String method = request.getMethod();
 
         Message mensagemDelete = new Message();
-        if (!estoqueRepository.existsById(productId)) {
+
+        if (!pacienteRepository.existsById(patientId)) {
             logger.info("Não foi encontrado esse ID na Base de Dados.");
             return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
         } else {
             mensagemDelete.setMethod(method);
-            mensagemDelete.setId(productId);
+            mensagemDelete.setId(patientId);
             String mensagemJson = convertMensagemToJson(mensagemDelete);
             mensagemService.sendMessage(mensagemJson);
             return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagemJson);
         }
     }
+
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/{productId}")
-    public ResponseEntity<?> buscar(@PathVariable Long productId) {
-        Optional<Itens> itensOptional = estoqueRepository.findById(productId);
-        if (itensOptional.isPresent()) {
-            Itens itens = itensOptional.get();
-            return ResponseEntity.ok(itens);
+    @GetMapping("/{patientId}")
+    public ResponseEntity<?> buscar(@PathVariable Long patientId) {
+        Optional<Paciente> pacienteOptional = pacienteRepository.findById(patientId);
+
+        if (pacienteOptional.isPresent()) {
+            Paciente paciente = pacienteOptional.get();
+            return ResponseEntity.ok(paciente);
         } else {
             logger.info("Não foi encontrado esse ID na Base de Dados.");
             return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
@@ -104,12 +107,14 @@ public class EstoqueResource {
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping
     public ResponseEntity<?> buscarTodos() {
-        List<Itens> itens = estoqueRepository.findAll();
 
-        if (itens.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum item foi encontrado na base de dados.");
+        List<Paciente> pacientes = pacienteRepository.findAll();
+
+        if (pacientes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum paciente encontrado na base de dados.");
         } else {
-            return ResponseEntity.ok(itens);
+            return ResponseEntity.ok(pacientes);
         }
     }
+
 }

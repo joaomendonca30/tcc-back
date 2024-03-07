@@ -1,11 +1,11 @@
 package br.com.estoque.producer.resource;
 
-import br.com.estoque.producer.model.Itens;
+import br.com.estoque.producer.model.Agenda;
 import br.com.estoque.producer.model.Message;
-
-import br.com.estoque.producer.repository.ItensRepository;
-import br.com.estoque.producer.service.EstoqueService;
-import br.com.estoque.producer.service.UserService;
+import br.com.estoque.producer.model.Paciente;
+import br.com.estoque.producer.model.User;
+import br.com.estoque.producer.repository.AgendaRepository;
+import br.com.estoque.producer.service.AgendaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,15 +20,15 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/estoque")
-public class EstoqueResource {
+@RequestMapping("/agenda")
+public class AgendaResource {
 
     @Autowired
-    private ItensRepository estoqueRepository;
-    private final Logger logger = LoggerFactory.getLogger(EstoqueResource.class);
+    private AgendaRepository agendaRepository;
+    private final Logger logger = LoggerFactory.getLogger(UserResource.class);
 
     @Autowired
-    EstoqueService mensagemService;
+    AgendaService mensagemService;
 
     @CrossOrigin(origins = "http://localhost:3000") // Permita solicitações apenas a partir de http://localhost:3000
     @PostMapping("/inserir")
@@ -44,20 +44,20 @@ public class EstoqueResource {
         mensagemService.sendMessage(mensagemJson);
         return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagem);
     }
+
     @CrossOrigin(origins = "http://localhost:3000")
-    @PutMapping("/editar/{productId}")
-    public ResponseEntity<String> atualizar(@PathVariable Long productId, @RequestBody String itens,
+    @PutMapping("/editar/{scheduleId}")
+    public ResponseEntity<String> atualizar(@PathVariable Long scheduleId, @RequestBody String itens,
                                             HttpServletRequest request) throws JsonProcessingException {
 
         String method = request.getMethod();
 
         Message mensagem = new Message();
-
-        if (!estoqueRepository.existsById(productId)) {
+        if (!agendaRepository.existsById(scheduleId)) {
             logger.info("Não foi encontrado esse ID na Base de Dados.");
             return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
         } else {
-            mensagem.setId(productId);
+            mensagem.setId(scheduleId);
             mensagem.setMethod(method);
             mensagem.setMessage(itens);
 
@@ -71,30 +71,32 @@ public class EstoqueResource {
         return objectMapper.writeValueAsString(mensagem);
 
     }
+
     @CrossOrigin(origins = "http://localhost:3000")
-    @DeleteMapping("/deletar/{productId}")
-    public ResponseEntity<String> delete(@PathVariable Long productId,HttpServletRequest request) throws JsonProcessingException {
+    @DeleteMapping("/deletar/{scheduleId}")
+    public ResponseEntity<String> delete(@PathVariable Long scheduleId,HttpServletRequest request) throws JsonProcessingException {
         String method = request.getMethod();
 
         Message mensagemDelete = new Message();
-        if (!estoqueRepository.existsById(productId)) {
+        if (!agendaRepository.existsById(scheduleId)) {
             logger.info("Não foi encontrado esse ID na Base de Dados.");
             return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
         } else {
             mensagemDelete.setMethod(method);
-            mensagemDelete.setId(productId);
+            mensagemDelete.setId(scheduleId);
             String mensagemJson = convertMensagemToJson(mensagemDelete);
             mensagemService.sendMessage(mensagemJson);
             return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagemJson);
         }
     }
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/{productId}")
-    public ResponseEntity<?> buscar(@PathVariable Long productId) {
-        Optional<Itens> itensOptional = estoqueRepository.findById(productId);
-        if (itensOptional.isPresent()) {
-            Itens itens = itensOptional.get();
-            return ResponseEntity.ok(itens);
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<?> buscar(@PathVariable Long scheduleId) {
+        Optional<Agenda> agendaOptional = agendaRepository.findById(scheduleId);
+
+        if (agendaOptional.isPresent()) {
+            Agenda agenda = agendaOptional.get();
+            return ResponseEntity.ok(agenda);
         } else {
             logger.info("Não foi encontrado esse ID na Base de Dados.");
             return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
@@ -104,12 +106,12 @@ public class EstoqueResource {
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping
     public ResponseEntity<?> buscarTodos() {
-        List<Itens> itens = estoqueRepository.findAll();
+        List<Agenda> agenda = agendaRepository.findAll();
 
-        if (itens.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum item foi encontrado na base de dados.");
+        if (agenda.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum agendamento foi encontrado na base de dados.");
         } else {
-            return ResponseEntity.ok(itens);
+            return ResponseEntity.ok(agenda);
         }
     }
 }

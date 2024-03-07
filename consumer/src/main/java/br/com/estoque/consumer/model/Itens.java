@@ -5,8 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -20,7 +18,7 @@ public class Itens {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long productId;
 
     private String name;
 
@@ -30,15 +28,15 @@ public class Itens {
 
     private String type;
 
-    private LocalDate startDate;
+    private Date startDate;
 
-    private LocalDate endDate;
+    private Date endDate;
 
     public Itens() {
     }
 
-    public Itens(Long id, String name, int quantity, String producer, String type, LocalDate startDate, LocalDate endDate) {
-        this.id = id;
+    public Itens(Long id, String name, int quantity, String producer, String type, Date startDate, Date endDate) {
+        this.productId = id;
         this.name = name;
         this.quantity = quantity;
         this.producer = producer;

@@ -8,18 +8,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuario")
 public class UserResource {
 
     @Autowired
-    private UserRepository repo;
+    private UserRepository userRepository;
 
+    private final Logger logger = LoggerFactory.getLogger(UserResource.class);
     @Autowired
     UserService mensagemService;
 
@@ -35,25 +39,29 @@ public class UserResource {
 
         String mensagemJson = convertMensagemToJson(mensagemPOST);
         mensagemService.sendMessage(mensagemJson);
-        return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagemJson);
+        return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagem);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/editar/{userId}")
-    public ResponseEntity<String> atualizar(@PathVariable Long userId, @RequestBody String itens,
+    public ResponseEntity<String> atualizar(@PathVariable Long userId, @RequestBody String body,
                                             HttpServletRequest request) throws JsonProcessingException {
 
         String method = request.getMethod();
 
         Message mensagem = new Message();
+        if (!userRepository.existsById(userId)) {
+            logger.info("Não foi encontrado esse ID na Base de Dados.");
+            return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
+        } else {
+            mensagem.setId(userId);
+            mensagem.setMethod(method);
+            mensagem.setMessage(body);
 
-        mensagem.setId(userId);
-        mensagem.setMethod(method);
-        mensagem.setMessage(itens);
-
-        String mensagemJson = convertMensagemToJson(mensagem);
-        mensagemService.sendMessage(mensagemJson);
-        return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + itens);
+            String mensagemJson = convertMensagemToJson(mensagem);
+            mensagemService.sendMessage(mensagemJson);
+            return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + body);
+        }
     }
     private String convertMensagemToJson(Message mensagem) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -68,26 +76,67 @@ public class UserResource {
 
         Message mensagemDelete = new Message();
 
-        mensagemDelete.setMethod(method);
-        mensagemDelete.setId(userId);
-
-        String mensagemJson = convertMensagemToJson(mensagemDelete);
-        mensagemService.sendMessage(mensagemJson);
-
-        return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagemJson);
+        if (!userRepository.existsById(userId)) {
+            logger.info("Não foi encontrado esse ID na Base de Dados.");
+            return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
+        } else {
+            mensagemDelete.setMethod(method);
+            mensagemDelete.setId(userId);
+            String mensagemJson = convertMensagemToJson(mensagemDelete);
+            mensagemService.sendMessage(mensagemJson);
+            return ResponseEntity.ok().body("Mensagem enviada com sucesso: " + mensagemJson);
+        }
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{userId}")
-    public ResponseEntity<User> buscar(@PathVariable Long userId) {
-        return repo.findById(userId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> buscar(@PathVariable Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return ResponseEntity.ok(user);
+        } else {
+            logger.info("Não foi encontrado esse ID na Base de Dados.");
+            return ResponseEntity.badRequest().body("Não foi encontrado esse ID na Base de Dados.");
+        }
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping
-    public List<User> buscarTodos() {
-        return repo.findAll();
+    public ResponseEntity<?> buscarTodos() {
+
+        List<User> users = userRepository.findAll();
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum usuário encontrado na base de dados.");
+        } else {
+            return ResponseEntity.ok(users);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/profissionaisDaSaude")
+    public ResponseEntity<?> buscarPrrofissionaisSaude() {
+        List<User> profissionais = userRepository.findByProfile("Profissional da Saúde");
+
+        if (profissionais.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum profissional da saúde encontrado na base de dados.");
+        } else {
+            return ResponseEntity.ok(profissionais);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/recepcionistas")
+    public ResponseEntity<?> buscarRecepcionais() {
+
+        List<User> profissionais = userRepository.findByProfile("Recepcionista");
+
+        if (profissionais.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum(a) recepcionista encontrado(a) na base de dados.");
+        } else {
+            return ResponseEntity.ok(profissionais);
+        }
     }
 }
