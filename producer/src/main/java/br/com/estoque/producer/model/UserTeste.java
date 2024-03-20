@@ -1,43 +1,31 @@
-package br.com.estoque.consumer.model;
+package br.com.estoque.producer.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import org.springframework.stereotype.Component;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
 
 
-@Entity
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "user")
-public class User {
-    @EqualsAndHashCode.Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
-    @NotNull
+public class UserTeste {
+
+    private String userId;
     private String name;
-    @Email
     private String email;
-    @NotNull
     private String cpf;
-    @NotNull
     private String phoneNumber;
-    @NotNull
     private String profile;
-    @NotNull
     private int council;
-    @NotNull
     private String federativeUnit;
 
-    public User() {
+    public UserTeste() {
     }
 
-    public User(Long userId, String name, String email, String cpf, String phoneNumber, String profile, int council, String federativeUnit) {
+    public UserTeste(String userId, String name, String email, String cpf, String phoneNumber, String profile, int council, String federativeUnit) {
         this.userId = userId;
         this.name = name;
         this.email = email;

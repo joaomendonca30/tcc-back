@@ -30,13 +30,13 @@ public class Paciente {
     private String phoneNumber;
     private Date dateOfBirth;
     private String healthInsurance;
-    private String insurancePlanNumber;
+    private String planNumber;
     private String specialNotes;
 
     public Paciente() {
     }
 
-    public Paciente(Long patientId, String name, String email, String cpf, String phoneNumber, Date dateOfBirth, String healthInsurance, String insurancePlanNumber, String specialNotes) {
+    public Paciente(Long patientId, String name, String email, String cpf, String phoneNumber, Date dateOfBirth, String healthInsurance, String planNumber, String specialNotes) {
         this.patientId = patientId;
         this.name = name;
         this.email = email;
@@ -44,7 +44,7 @@ public class Paciente {
         this.phoneNumber = phoneNumber;
         this.dateOfBirth = dateOfBirth;
         this.healthInsurance = healthInsurance;
-        this.insurancePlanNumber = insurancePlanNumber;
+        this.planNumber = planNumber;
         this.specialNotes = specialNotes;
     }
 }

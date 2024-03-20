@@ -1,11 +1,11 @@
 package br.com.estoque.consumer.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 
 @Entity
@@ -20,9 +20,14 @@ public class Agenda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sheduleId;
 
-    @ManyToOne // Muitas agendas podem pertencer a um usuário
-    @JoinColumn(name = "user_id") // Nome da coluna na tabela agenda que referencia o usuário
-    private User user; // Referência para o usuário
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User userId;
+
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
+    private Paciente patientId;
+
     @NotNull
     private String start;
     @NotNull
@@ -32,15 +37,19 @@ public class Agenda {
     @NotNull
     private String scheduleType;
 
+
+
     public Agenda() {
     }
 
-    public Agenda(Long sheduleId, User user, String start, String end, String title, String scheduleType) {
+    public Agenda(Long sheduleId, User userId, Paciente patientId, String start, String end, String title, String scheduleType) {
         this.sheduleId = sheduleId;
-        this.user = user;
+        this.userId = userId;
+        this.patientId = patientId;
         this.start = start;
         this.end = end;
         this.title = title;
         this.scheduleType = scheduleType;
     }
+
 }

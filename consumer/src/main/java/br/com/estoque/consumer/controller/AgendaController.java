@@ -31,8 +31,8 @@ public class AgendaController {
         logger.info("Agenda adicionado com sucesso.");
     }
 
-    public void delete(Long id) {
-        agendaService.excluir(id);
+    public void delete(Long id, Long userId) {
+        agendaService.excluir(id, userId);
         logger.info("Agenda deletada com sucesso.");
     }
 }

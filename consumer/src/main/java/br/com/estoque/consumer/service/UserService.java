@@ -25,10 +25,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User encontrarPorId(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + userId));
+    }
+
     @Transactional
     public void excluir(Long id){
-        // Exclua todos os registros na tabela agenda relacionados a este usuário
-        agendaRepository.deleteByUserId(id);
         userRepository.deleteById(id);
     }
 

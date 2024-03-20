@@ -2,10 +2,14 @@ package br.com.estoque.producer.resource;
 
 import br.com.estoque.producer.model.Message;
 import br.com.estoque.producer.model.User;
+import br.com.estoque.producer.model.UserTeste;
 import br.com.estoque.producer.repository.UserRepository;
 import br.com.estoque.producer.service.UserService;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,13 +124,29 @@ public class UserResource {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/profissionaisDaSaude")
-    public ResponseEntity<?> buscarPrrofissionaisSaude() {
-        List<User> profissionais = userRepository.findByProfile("Profissional da Saúde");
+    public ResponseEntity<?> buscarPrrofissionaisSaude() throws IOException {
 
-        if (profissionais.isEmpty()) {
+        List<User> profissionais = userRepository.findByProfile("Profissional da Saúde");
+        List<UserTeste> user = new ArrayList<>();
+
+        for (User profissional : profissionais) {
+            UserTeste userTeste = new UserTeste();
+            userTeste.setUserId(String.valueOf(profissional.getUserId())); // Convertendo userId de long para String
+            userTeste.setName(profissional.getName());
+            userTeste.setCpf(profissional.getCpf());
+            userTeste.setEmail(profissional.getEmail());
+            userTeste.setCouncil(profissional.getCouncil());
+            userTeste.setProfile(profissional.getProfile());
+            userTeste.setFederativeUnit(profissional.getFederativeUnit());
+            userTeste.setPhoneNumber(profissional.getPhoneNumber());
+            userTeste.setName(profissional.getName());
+            user.add(userTeste);
+        }
+
+        if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum profissional da saúde encontrado na base de dados.");
         } else {
-            return ResponseEntity.ok(profissionais);
+            return ResponseEntity.ok(user);
         }
     }
 

@@ -1,7 +1,6 @@
 package br.com.estoque.producer.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,9 +20,13 @@ public class Agenda {
     private Long sheduleId;
 
 
-    @ManyToOne // Muitas agendas podem pertencer a um usuário
-    @JoinColumn(name = "user_id") // Nome da coluna na tabela agenda que referencia o usuário
-    private User user; // Referência para o usuário
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User userId;
+
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
+    private Paciente pacienteId;
     @NotNull
     private String start;
     @NotNull
@@ -36,12 +39,13 @@ public class Agenda {
     public Agenda() {
     }
 
-    public Agenda(Long sheduleId, User user, String start, String end, String title, String scheduleType) {
+    public Agenda(Long sheduleId, User userId, Paciente pacienteId, String start, String end, String title, String scheduleType) {
         this.sheduleId = sheduleId;
-        this.user = user;
+        this.userId = userId;
         this.start = start;
         this.end = end;
         this.title = title;
         this.scheduleType = scheduleType;
+        this.pacienteId = pacienteId;
     }
 }

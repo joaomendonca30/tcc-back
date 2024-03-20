@@ -17,14 +17,26 @@ public class AgendaService {
     @Autowired
     private UserRepository userRepository;
 
+
+
     //Realiza o rollback se algo der errado
     @Transactional
     public Agenda salvar(Agenda agenda){
         return agendaRepository.save(agenda);
     }
     @Transactional
-    public void excluir(Long id){
-        agendaRepository.deleteById(id);
+    public void excluir(Long scheduleId, Long userId){
+        // Encontre o agendamento dentro do usuário
+//        Agenda agendaToRemove = user.getAgendas().stream()
+//                .filter(agenda -> agenda.getSheduleId().equals(scheduleId))
+//                .findFirst()
+//                .orElseThrow(() -> new RuntimeException("Agendamento não encontrado para o usuário com ID " + userId));
+
+        // Remova o agendamento da lista de agendamentos do usuário
+       // user.getAgendas().remove(agendaToRemove);
+
+        // Atualize o usuário no banco de dados para refletir as alterações
+        //userRepository.save(user);
     }
 
 
