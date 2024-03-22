@@ -110,7 +110,7 @@ public class AgendaResource {
     @GetMapping("/{userId}")
     public ResponseEntity<?> buscar(@PathVariable Long userId) {
 
-        List<ProfissionalSaude> agenda = agendaRepository.findByUserAndUser_Profile(userId);
+        List<Agenda> agenda = agendaRepository.findSchedule(userId);
 
         if (agenda.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhuma consulta encontrada na base de dados.");

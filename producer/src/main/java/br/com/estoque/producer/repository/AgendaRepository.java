@@ -14,6 +14,5 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
     @Query("SELECT a FROM Agenda a JOIN a.userId u WHERE u.userId = :userId AND u.profile = 'Profissional da Saúde'")
     List<Agenda> findSchedule(@Param("userId") Long userId);
 
-    @Query("SELECT new br.com.estoque.producer.model.ProfissionalSaude(a.sheduleId, a.start, a.end, a.title, a.scheduleType) FROM Agenda a JOIN a.userId u WHERE u.userId = :userId AND u.profile = 'Profissional da Saúde'")
-    List<ProfissionalSaude> findByUserAndUser_Profile(@Param("userId") Long userId);
+
 }
